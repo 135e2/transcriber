@@ -23,22 +23,27 @@ jobs:
       - name: Download audio file
         run: |
           mkdir -p workdir
-          pushd workdir
+          cd workdir
           echo "Downloading audio..."
           curl -L ${audioURL} --output media.mp3
       - name: Whisper!
-        run: whisper media.mp3
+        working-directory: ./workdir
+        run: |
+          whisper media.mp3
       - name: Translate srt subtitles
+        working-directory: ./workdir
         run: |
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
           python3 ../scripts/translator.py -tp caiyun media.mp3
       - name: Generate videos with/without subtitle
+        working-directory: ./workdir
         run: |
           echo "Generating videos using ffmpeg..."
           ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i media.mp3 -crf 0 -c:a copy -shortest media.mp4
           ffmpeg -i media.mp4 -vf subtitles=media.mp3_zh-caiyun.srt media-sub.mp4
+          cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
