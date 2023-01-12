@@ -29,7 +29,7 @@ jobs:
       - name: Whisper!
         working-directory: ./workdir
         run: |
-          whisper media.mp3
+          whisper --model base media.mp3
       - name: Translate srt subtitles
         working-directory: ./workdir
         run: |
