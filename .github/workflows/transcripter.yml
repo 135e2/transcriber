@@ -1,0 +1,46 @@
+name: "transcripter"
+
+on:
+  workflow_dispatch:
+    inputs:
+      audioURL:
+        description: "Audio file URL"
+        required: true
+        type: string
+
+jobs:
+  transcript:
+    name: "Transcript"
+    runs-on: ubuntu-latest
+    container: 135e2/${{ github.repository }}
+    env:
+      audioURL: ${{ inputs.audioURL }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+      - name: Update Archlinux repo
+        run: pacman -Syu --noconfirm
+      - name: Download audio file
+        run: |
+          mkdir -p workdir
+          pushd workdir
+          echo "Downloading audio..."
+          curl ${audioURL} --output media.mp3
+      - name: Whisper!
+        run: whisper media.mp3
+      - name: Translate srt subtitles
+        run: |
+          echo "Installing deps..."
+          pip install -r ../scripts/requirements.txt
+          echo "Translating..."
+          python3 ../scripts/translator.py -tp caiyun media.mp3
+      - name: Generate videos with/without subtitle
+        run: |
+          echo "Generating videos using ffmpeg..."
+          ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i media.mp3 -crf 0 -c:a copy -shortest media.mp4
+          ffmpeg -i media.mp4 -vf subtitles=media.mp3_zh-caiyun.srt media-sub.mp4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: workdir/
+          name: transcripted
