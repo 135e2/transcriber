@@ -2,14 +2,14 @@ name: "docker-build"
 
 on:
   workflow_dispatch:
-    push:
-      branches:
-        - "master"
-      tags:
-        - "v*"
-    pull_request:
-      branches:
-        - "master"
+  push:
+    branches:
+      - "master"
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - "master"
 
 jobs:
   build:
