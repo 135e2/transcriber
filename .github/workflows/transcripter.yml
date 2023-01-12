@@ -12,7 +12,7 @@ jobs:
   transcript:
     name: "Transcript"
     runs-on: ubuntu-latest
-    container: 135e2/${{ github.repository }}
+    container: ${{ github.repository }}:master
     env:
       audioURL: ${{ inputs.audioURL }}
     steps:
