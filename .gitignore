@@ -1,0 +1,5 @@
+*.mp3
+*.srt
+*.vtt
+.vscode
+*venv
