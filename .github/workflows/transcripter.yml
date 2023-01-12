@@ -25,7 +25,7 @@ jobs:
           mkdir -p workdir
           pushd workdir
           echo "Downloading audio..."
-          curl ${audioURL} --output media.mp3
+          curl -L ${audioURL} --output media.mp3
       - name: Whisper!
         run: whisper media.mp3
       - name: Translate srt subtitles
