@@ -36,7 +36,7 @@ jobs:
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
-          python3 ../scripts/translator.py -tp caiyun media.mp3
+          python3 ../scripts/translate.py -tp caiyun media.mp3.srt
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
