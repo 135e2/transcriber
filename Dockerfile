@@ -16,5 +16,6 @@ RUN useradd -m -G wheel -s /bin/bash build
 RUN perl -i -pe 's/# (%wheel ALL=\(ALL:ALL\) NOPASSWD: ALL)/$1/' /etc/sudoers
 USER build
 RUN paru -S whisper-git --noconfirm
+USER root
 RUN mkdir ~/whisper
 WORKDIR ~/whisper
