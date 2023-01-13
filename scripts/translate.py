@@ -55,13 +55,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-tl",
         "--target-language",
-        help="The target language for translation, default is Chinese",
+        help="The target language for translation, default is zh (Chinese)",
         default="zh",
     )
     parser.add_argument(
         "-tp",
         "--translate-provider",
-        help="The target language for translation, default is bing\n\nCheckout https://github.com/UlionTse/translators#features for more details.",
+        help="The translate provider for translation, default is bing\n\nCheckout https://github.com/UlionTse/translators#features for more details.",
         default="bing",
     )
     parser.add_argument(
@@ -76,7 +76,7 @@ if __name__ == "__main__":
         "-V",
         "--version",
         action="version",
-        version="%(prog)s v1.4-20230112",
+        version="%(prog)s v1.5-20230113",
         help="%(prog)s version code",
     )
     args = parser.parse_args()
