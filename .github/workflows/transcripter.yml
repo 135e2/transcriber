@@ -53,7 +53,7 @@ jobs:
         working-directory: ./workdir
         run: |
           echo "Generating videos using ffmpeg..."
-          ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.mp4
+          ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.mp4
           ffmpeg -i ${{ env.filename_base }}.mp4 -vf subtitles=${{ env.filename }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
           cd ..
       - name: Upload artifact
