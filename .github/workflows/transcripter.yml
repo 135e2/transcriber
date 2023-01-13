@@ -7,6 +7,14 @@ on:
         description: "Audio file URL"
         required: true
         type: string
+      targetLanguage:
+        description: "The target language for translation, default is zh (Chinese)"
+        default: "zh"
+        type: string
+      translateProvider:
+        description: "The translate provider for translation, default is caiyun"
+        default: "caiyun"
+        type: string
 
 jobs:
   transcript:
@@ -40,13 +48,13 @@ jobs:
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
-          python3 ../scripts/translate.py -tp caiyun ${{ env.filename }}.srt
+          python3 ../scripts/translate.py -tl ${{ inputs.targetLanguage }} -tp ${{ inputs.translateProvider }} ${{ env.filename }}.srt
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
           echo "Generating videos using ffmpeg..."
           ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.mp4
-          ffmpeg -i ${{ env.filename_base }}.mp4 -vf subtitles=${{ env.filename }}_zh-caiyun.srt ${{ env.filename_base }}-sub.mp4
+          ffmpeg -i ${{ env.filename_base }}.mp4 -vf subtitles=${{ env.filename }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
           cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v3
