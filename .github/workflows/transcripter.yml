@@ -17,7 +17,7 @@ jobs:
       audioURL: ${{ inputs.audioURL }}
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Update Archlinux repo
         run: pacman -Syu --noconfirm
       - name: Download audio file
@@ -45,7 +45,7 @@ jobs:
           ffmpeg -i media.mp4 -vf subtitles=media.mp3_zh-caiyun.srt media-sub.mp4
           cd ..
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: workdir/
           name: transcripted
