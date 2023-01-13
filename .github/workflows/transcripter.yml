@@ -25,27 +25,31 @@ jobs:
           mkdir -p workdir
           cd workdir
           echo "Downloading audio..."
-          curl -L ${audioURL} --output media.mp3
+          filename=$(curl -sJOL ${audioURL} -w "%{filename_effective}")
+          filename_base=${filename%.*}
+          echo "filename=${filename}" >> $GITHUB_ENV
+          echo "filename_base=${filename_base}" >> $GITHUB_ENV
+          echo "Downloaded file: ${filename}"
       - name: Whisper!
         working-directory: ./workdir
         run: |
-          whisper --model base media.mp3
+          whisper --model base ${{ env.filename }}
       - name: Translate srt subtitles
         working-directory: ./workdir
         run: |
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
-          python3 ../scripts/translate.py -tp caiyun media.mp3.srt
+          python3 ../scripts/translate.py -tp caiyun ${{ env.filename }}.srt
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
           echo "Generating videos using ffmpeg..."
-          ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i media.mp3 -crf 0 -c:a copy -shortest media.mp4
-          ffmpeg -i media.mp4 -vf subtitles=media.mp3_zh-caiyun.srt media-sub.mp4
+          ffmpeg -f lavfi -i color=c=black:s=1280x720:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.mp4
+          ffmpeg -i ${{ env.filename_base }}.mp4 -vf subtitles=${{ env.filename }}_zh-caiyun.srt ${{ env.filename_base }}-sub.mp4
           cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           path: workdir/
-          name: transcripted
+          name: ${{ env.filename_base }}
