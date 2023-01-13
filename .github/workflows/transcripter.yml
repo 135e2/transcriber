@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Update Archlinux repo
-        run: pacman -Syu --noconfirm
+        run: pacman -Syu --noconfirm noto-fonts-cjk
       - name: Download audio file
         run: |
           mkdir -p workdir
