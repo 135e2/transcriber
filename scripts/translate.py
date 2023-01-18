@@ -9,7 +9,7 @@ Deps:
 """
 
 import argparse
-import logging
+from logger import logger
 
 
 def translate_srt(
@@ -29,11 +29,13 @@ def translate_srt(
         try:
             srt_language = langdetect.detect(text)
         except langdetect.lang_detect_exception.LangDetectException as e:
-            logger.warning(f"Got langdetect error: {e}, '{text}' might be a string `langdetect` cannot recognize.")
+            logger.warning(
+                f"Got langdetect error: {e}, '{text}' might be a string `langdetect` cannot recognize."
+            )
         if srt_language == target_language or (
             srt_language == "zh-cn" and target_language == "zh"
         ):  # Hack for ISO 639-1 zh-cn :(
-            print(
+            logger.info(
                 f"The language of the srt file is already {target_language}, Skipping translation..."
             )
             break
@@ -43,7 +45,7 @@ def translate_srt(
                 subtitle.text = translation
             else:
                 subtitle.text += "\n" + translation
-            print(subtitle.text)
+            logger.info(subtitle.text)
         except AttributeError:
             logger.error("Got invalid translate_provider: " + translate_provider)
             logger.error(
@@ -103,8 +105,6 @@ if __name__ == "__main__":
         output = args.FILE.replace(
             ".srt", f"_{target_language}-{translate_provider}.srt"
         )
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
 
     # Dynamic Import
     import pysrt
@@ -115,5 +115,5 @@ if __name__ == "__main__":
 
     time = timeit.default_timer()
     translate_srt(filepath, output, replace, target_language, translate_provider)
-    print(f"{filepath} has been translated to {output}")
-    print("Time used: %.1fs" % (timeit.default_timer() - time))
+    logger.success(f"{filepath} has been translated to {output}")
+    logger.success("Time used: %.1fs" % (timeit.default_timer() - time))
