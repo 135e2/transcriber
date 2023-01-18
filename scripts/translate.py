@@ -26,7 +26,10 @@ def translate_srt(
 
     for subtitle in subtitles:
         text = subtitle.text
-        srt_language = detect(text)
+        try:
+            srt_language = langdetect.detect(text)
+        except langdetect.lang_detect_exception.LangDetectException as e:
+            logger.warning(f"Got langdetect error: {e}, '{text}' might be a string `langdetect` cannot recognize.")
         if srt_language == target_language or (
             srt_language == "zh-cn" and target_language == "zh"
         ):  # Hack for ISO 639-1 zh-cn :(
@@ -108,7 +111,7 @@ if __name__ == "__main__":
     from translators import server as tss
     import timeit
     import requests
-    from langdetect import detect
+    import langdetect
 
     time = timeit.default_timer()
     translate_srt(filepath, output, replace, target_language, translate_provider)
