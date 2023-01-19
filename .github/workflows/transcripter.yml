@@ -52,9 +52,15 @@ jobs:
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
-          echo "Generating videos using ffmpeg..."
-          ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.mp4
-          ffmpeg -i ${{ env.filename_base }}.mp4 -vf subtitles=${{ env.filename }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
+          if [[ $(file -bi ${{ env.filename }}) == video/* ]]; then # Determine filetype
+            echo "Detected input as a video file, skipping video generation..."
+          else
+            echo "Generating videos using ffmpeg..."
+            ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.orig.mp4
+          fi
+          ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.filename }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
+          echo "Deleting redundant files..."
+          rm -v ${{ env.filename_base }}.orig.mp4
           cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v3
