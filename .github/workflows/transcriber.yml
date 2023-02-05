@@ -1,4 +1,4 @@
-name: "transcripter"
+name: "transcriber"
 
 on:
   workflow_dispatch:
@@ -21,8 +21,8 @@ on:
         type: string
 
 jobs:
-  transcript:
-    name: "Transcript"
+  transcribe:
+    name: "Transcribe"
     runs-on: ubuntu-latest
     container: ${{ github.repository }}:master
     env:
