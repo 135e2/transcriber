@@ -32,37 +32,48 @@ jobs:
         uses: actions/checkout@v3
       - name: Update Archlinux repo
         run: pacman -Syu --noconfirm noto-fonts-cjk
-      - name: Download audio file
+      - name: Download / convert audio file
         run: |
           mkdir -p workdir
           cd workdir
-          echo "Downloading audio..."
+          echo "Downloading file..."
           filename=$(curl -sJOL ${audioURL} -w "%{filename_effective}")
           filename_base=${filename%.*}
           echo "filename=${filename}" >> $GITHUB_ENV
           echo "filename_base=${filename_base}" >> $GITHUB_ENV
+          if [[ $(file -bi "$filename") == video/* ]]; then # Determine filetype
+            echo "Detected input as a video file, converting to .mp3..."
+            ffmpeg -i "$filename" "$filename_base".mp3
+            is_video=true
+            whisper_file="${filename_base}.mp3"
+          else
+            is_video=false
+            whisper_file="${filename}"
+          fi
+          echo "is_video=${is_video}" >> $GITHUB_ENV
+          echo "whisper_file=${whisper_file}" >> $GITHUB_ENV
           echo "Downloaded file: ${filename}"
       - name: Whisper!
         working-directory: ./workdir
         run: |
-          whisper --model ${{ inputs.whisperModel }} ${{ env.filename }}
+          whisper --model ${{ inputs.whisperModel }} ${{ env.whisper_file }}
       - name: Translate srt subtitles
         working-directory: ./workdir
         run: |
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
-          python3 ../scripts/translate.py -tl ${{ inputs.targetLanguage }} -tp ${{ inputs.translateProvider }} ${{ env.filename }}.srt
+          python3 ../scripts/translate.py -tl ${{ inputs.targetLanguage }} -tp ${{ inputs.translateProvider }} ${{ env.whisper_file }}.srt
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
-          if [[ $(file -bi ${{ env.filename }}) == video/* ]]; then # Determine filetype
+          if [[ ${{ env.is_video }} == true ]]; then # Determine filetype
             echo "Detected input as a video file, skipping video generation..."
           else
             echo "Generating videos using ffmpeg..."
             ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.orig.mp4
           fi
-          ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.filename }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
+          ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.whisper_file }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
           echo "Deleting redundant files..."
           rm -v ${{ env.filename_base }}.orig.mp4
           cd ..
