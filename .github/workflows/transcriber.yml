@@ -24,7 +24,7 @@ jobs:
   transcribe:
     name: "Transcribe"
     runs-on: ubuntu-latest
-    container: ${{ github.repository }}:master
+    container: ghcr.io/${{ github.repository }}:master
     env:
       audioURL: ${{ inputs.audioURL }}
     steps:
