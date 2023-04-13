@@ -10,6 +10,9 @@ RUN pacman-key --init \
  && pacman -S --noconfirm archlinuxcn-keyring 
 # Deps 
 RUN pacman -S base base-devel git asp python-pip paru --noconfirm --needed
+# Build with makepkg's --nocheck flag in `paru.conf`
+# https://aur.archlinux.org/packages/python-ffmpeg#comment-909364
+COPY paru.conf /etc/paru.conf
 # Hack from https://github.com/soloturn/build-aur-action/blob/b60db00581783113a7265a7858e2441c9e79df8b/Dockerfile#L2
 RUN sed -i '/E_ROOT/d' /usr/bin/makepkg
 RUN useradd -m -G wheel -s /bin/bash build
