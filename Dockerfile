@@ -21,6 +21,8 @@ USER build
 # python-tiktoken
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=whisper-git#n42
 RUN paru -S python-tiktoken-git --noconfirm
+# libnuma.so.1
+RUN paru -S numactl --noconfirm
 RUN paru -S whisper-git --noconfirm
 USER root
 RUN mkdir ~/whisper
