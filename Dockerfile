@@ -23,6 +23,14 @@ USER build
 RUN paru -S python-tiktoken-git --noconfirm
 # libnuma.so.1
 RUN paru -S numactl --noconfirm
+# build custom PKGBUILDs (python-llvmlite and python-numba)
+RUN mkdir -p /tmp/{python-llvmlite,python-numba}
+COPY trunk/PKGBUILD-python-llvmlite /tmp/python-llvmlite/PKGBUILD
+COPY trunk/PKGBUILD-python-numba /tmp/python-numba/PKGBUILD
+WORKDIR /tmp/python-llvmlite 
+RUN paru -U --noconfirm
+WORKDIR /tmp/python-numba 
+RUN paru -U --noconfirm
 RUN paru -S whisper-git --noconfirm
 USER root
 RUN mkdir ~/whisper
