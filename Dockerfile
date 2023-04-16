@@ -28,9 +28,9 @@ RUN mkdir -p /tmp/{python-llvmlite,python-numba}
 COPY trunk/PKGBUILD-python-llvmlite /tmp/python-llvmlite/PKGBUILD
 COPY trunk/PKGBUILD-python-numba /tmp/python-numba/PKGBUILD
 WORKDIR /tmp/python-llvmlite 
-RUN paru -U --noconfirm
+RUN paru -Ui --noconfirm
 WORKDIR /tmp/python-numba 
-RUN paru -U --noconfirm
+RUN paru -Ui --noconfirm
 RUN paru -S whisper-git --noconfirm
 USER root
 RUN mkdir ~/whisper
