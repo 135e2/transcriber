@@ -63,20 +63,22 @@ jobs:
           echo "Installing deps..."
           pip install -r ../scripts/requirements.txt
           echo "Translating..."
-          python3 ../scripts/translate.py -tl ${{ inputs.targetLanguage }} -tp ${{ inputs.translateProvider }} ${{ env.whisper_file }}.srt
+          python3 ../scripts/translate.py -tl ${{ inputs.targetLanguage }} -tp ${{ inputs.translateProvider }} ${{ env.filename_base }}.srt
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
         run: |
           if [[ ${{ env.is_video }} == true ]]; then # Determine filetype
             echo "Detected input as a video file, skipping video generation..."
+            echo "Embedding subtitles..."
+            ffmpeg -i ${{ env.filename }} -vf subtitles=${{ env.filename_base }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}_${{ inputs.targetLanguage }}.mp4
           else
             echo "Generating videos using ffmpeg..."
             ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.orig.mp4
+            echo "Embedding subtitles..."
+            ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.filename_base }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}_${{ inputs.targetLanguage }}.mp4
+            echo "Deleting redundant files..."
+            rm -v ${{ env.filename_base }}.orig.mp4
           fi
-          ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.whisper_file }}_${{ inputs.targetLanguage }}-${{ inputs.translateProvider }}.srt ${{ env.filename_base }}-sub.mp4
-          echo "Deleting redundant files..."
-          rm -v ${{ env.filename_base }}.orig.mp4
-          cd ..
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
