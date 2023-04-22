@@ -9,7 +9,6 @@ Deps:
 """
 
 import argparse
-from logger import logger
 
 
 def translate_srt(
@@ -115,6 +114,7 @@ if __name__ == "__main__":
     import timeit
     import requests
     import langdetect
+    from logger import logger
 
     time = timeit.default_timer()
     translate_srt(filepath, output, replace, target_language, translate_provider)
