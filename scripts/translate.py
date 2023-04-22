@@ -10,6 +10,10 @@ Deps:
 
 import argparse
 
+# Constants
+MAX_RETRIES = 3
+RETRY_DELAY = 10
+
 
 def translate_srt(
     filepath, output, replace=False, target_language="zh", translate_provider="bing"
@@ -18,10 +22,27 @@ def translate_srt(
 
     # Translate
     def __translator():
-        translator = getattr(tss, translate_provider)(
-            text, to_language=target_language, update_session_after_seconds=15
-        )
-        return translator
+        for i in range(MAX_RETRIES):
+            try:
+                translator = getattr(tss, translate_provider)(
+                    text, to_language=target_language, update_session_after_seconds=15
+                )
+                return translator
+            except requests.exceptions.HTTPError as e:
+                logger.error(
+                    f"Got a HTTP error, retrying in {RETRY_DELAY} seconds: \n{e}"
+                )
+                time.sleep(RETRY_DELAY)
+                logger.error(f"Failed to translate {text} after {MAX_RETRIES} retries.")
+                subtitles.save(output, encoding="utf-8")
+                exit(1)
+            except AttributeError:
+                logger.error("Got invalid translate_provider: " + translate_provider)
+                logger.error(
+                    "Checkout https://github.com/UlionTse/translators#features for avaliable providers."
+                )
+                subtitles.save(output, encoding="utf-8")
+                exit(1)
 
     for subtitle in subtitles:
         text = subtitle.text
@@ -38,7 +59,7 @@ def translate_srt(
                 f"The language of the srt file is already {target_language}, Skipping translation..."
             )
             break
-        try:
+
             translation = __translator()
             if replace:
                 subtitle.text = translation
@@ -48,17 +69,6 @@ def translate_srt(
                 f"[{subtitle.start.minutes}:{subtitle.start.seconds:02d}:{subtitle.start.milliseconds:03d} - "
                 + f"{subtitle.end.minutes}:{subtitle.end.seconds:02d}:{subtitle.end.milliseconds:03d}] {subtitle.text}"
             )
-        except AttributeError:
-            logger.error("Got invalid translate_provider: " + translate_provider)
-            logger.error(
-                "Checkout https://github.com/UlionTse/translators#features for avaliable providers."
-            )
-            subtitles.save(output, encoding="utf-8")
-            exit(1)
-        except requests.exceptions.HTTPError as e:
-            logger.error(f"Got a HTTP error, please check your session: \n{e}")
-            subtitles.save(output, encoding="utf-8")
-            exit(1)
     subtitles.save(output, encoding="utf-8")
 
 
