@@ -60,15 +60,15 @@ def translate_srt(
             )
             break
 
-            translation = __translator()
-            if replace:
-                subtitle.text = translation
-            else:
-                subtitle.text += "\n" + translation
-            logger.info(
-                f"[{subtitle.start.minutes}:{subtitle.start.seconds:02d}:{subtitle.start.milliseconds:03d} - "
-                + f"{subtitle.end.minutes}:{subtitle.end.seconds:02d}:{subtitle.end.milliseconds:03d}] {subtitle.text}"
-            )
+        translation = __translator()
+        if replace:
+            subtitle.text = translation
+        else:
+            subtitle.text += "\n" + translation
+        logger.info(
+            f"[{subtitle.start.minutes}:{subtitle.start.seconds:02d}:{subtitle.start.milliseconds:03d} - "
+            + f"{subtitle.end.minutes}:{subtitle.end.seconds:02d}:{subtitle.end.milliseconds:03d}] {subtitle.text}"
+        )
     subtitles.save(output, encoding="utf-8")
 
 
