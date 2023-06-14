@@ -18,11 +18,11 @@ RUN sed -i '/E_ROOT/d' /usr/bin/makepkg
 RUN useradd -m -G wheel -s /bin/bash build
 RUN perl -i -pe 's/# (%wheel ALL=\(ALL:ALL\) NOPASSWD: ALL)/$1/' /etc/sudoers
 USER build
+# libnuma.so.1 & python-blobfile-git
+RUN paru -S numactl python-blobfile-git --noconfirm
 # python-tiktoken
 # https://aur.archlinux.org/cgit/aur.git/tree/PKGBUILD?h=whisper-git#n42
 RUN paru -S python-tiktoken-git --noconfirm
-# libnuma.so.1
-RUN paru -S numactl --noconfirm
 RUN paru -S whisper-git --noconfirm
 USER root
 RUN mkdir ~/whisper
