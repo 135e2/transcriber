@@ -58,9 +58,9 @@ jobs:
         run: |
           export PATH="/usr/src/.venv/bin:$PATH"
           if [[ ${{ inputs.translate }} == true ]]; then
-            /usr/src/.venv/bin/python /usr/src/src/main.py -t -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+            /usr/src/.venv/bin/python /usr/src/src/main.py -d cpu -t -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
           else
-            /usr/src/.venv/bin/python /usr/src/src/main.py -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+            /usr/src/.venv/bin/python /usr/src/src/main.py -d cpu -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
           fi
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
