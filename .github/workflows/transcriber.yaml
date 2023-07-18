@@ -1,0 +1,83 @@
+name: "transcriber"
+
+on:
+  workflow_dispatch:
+    inputs:
+      audioURL:
+        description: "Audio file URL"
+        required: true
+        type: string
+      whisperModel:
+        description: "The model size for whisper, default is large-v2. For more details, checkout https://github.com/openai/whisper#available-models-and-languages"
+        default: "large-v2"
+        type: string
+      targetLanguage:
+        description: "The target language for translation, default is zh (Chinese)"
+        default: "zh"
+        type: string
+      translate:
+        description: "Whether translating the srt file"
+        default: true
+        type: boolean
+
+jobs:
+  transcribe:
+    name: "Transcribe"
+    runs-on: ubuntu-latest
+    container: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
+    env:
+      audioURL: ${{ inputs.audioURL }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install packages
+        run: apt update && apt install -y ffmpeg fonts-noto-cjk curl
+      - name: Download / convert audio file
+        run: |
+          mkdir -p workdir
+          cd workdir
+          echo "Downloading file..."
+          filename=$(curl -sJOL ${audioURL} -w "%{filename_effective}")
+          filename_base=${filename%.*}
+          echo "filename=${filename}" >> $GITHUB_ENV
+          echo "filename_base=${filename_base}" >> $GITHUB_ENV
+          if [[ $(file -bi "$filename") == video/* ]]; then # Determine filetype
+            echo "Detected input as a video file, converting to .wav..."
+            ffmpeg -i "$filename" "$filename_base".wav
+            is_video=true
+            whisper_file="${filename_base}.wav"
+          else
+            is_video=false
+            whisper_file="${filename}"
+          fi
+          echo "is_video=${is_video}" >> $GITHUB_ENV
+          echo "whisper_file=${whisper_file}" >> $GITHUB_ENV
+          echo "Downloaded file: ${filename}"
+      - name: Transcribe!
+        working-directory: ./workdir
+        run: |
+          if [ "${{ inputs.translate }}" == "true" ]; then
+            transcriber -t -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+          else
+            transcriber -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+          fi
+      - name: Generate videos with/without subtitle
+        working-directory: ./workdir
+        run: |
+          if [[ ${{ env.is_video }} == true ]]; then # Determine filetype
+            echo "Detected input as a video file, skipping video generation..."
+            echo "Embedding subtitles..."
+            ffmpeg -i ${{ env.filename }} -vf subtitles=${{ env.filename_base }}_${{ inputs.targetLanguage }}.srt ${{ env.filename_base }}_${{ inputs.targetLanguage }}.mp4
+          else
+            echo "Generating videos using ffmpeg..."
+            ffmpeg -f lavfi -i color=c=black:s=1920x1080:r=5 -i ${{ env.filename }} -crf 0 -c:a copy -shortest ${{ env.filename_base }}.orig.mp4
+            echo "Embedding subtitles..."
+            ffmpeg -i ${{ env.filename_base }}.orig.mp4 -vf subtitles=${{ env.filename_base }}_${{ inputs.targetLanguage }}.srt ${{ env.filename_base }}_${{ inputs.targetLanguage }}.mp4
+            echo "Deleting redundant files..."
+            rm -v ${{ env.filename_base }}.orig.mp4
+          fi
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: workdir/
+          name: ${{ env.filename_base }}
