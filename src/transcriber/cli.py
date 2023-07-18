@@ -25,7 +25,7 @@ def parse_args():
     parser.add_argument(
         "-tl",
         "--target-language",
-        help=("The target language for translation," "default is zh (Chinese)"),
+        help=("The target language for translation, " "default is zh (Chinese)"),
         default="zh",
     )
     parser.add_argument(
@@ -38,7 +38,7 @@ def parse_args():
         "-O",
         "--output",
         help=(
-            "The output file path,"
+            "The output file path, "
             "default is FILE(_TARGET_LANGUAGE).srt"
         ),
     )
