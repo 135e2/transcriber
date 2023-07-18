@@ -1,0 +1,15 @@
+# MacOS Cache
+.DS_Store
+
+# Backup file
+*.bak
+
+# Test files
+*.srt
+*.wav
+*.mp3
+
+# py cache
+**/__pycache__/
+build/*
+*.egg-info

@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+whisperx = {git = "https://github.com/m-bain/whisperx.git"}
+dl-translate = "*"
+setuptools = "*"
+torchvision = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"

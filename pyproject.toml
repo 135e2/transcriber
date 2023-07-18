@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 90
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.github
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.pyre_configuration
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | pyproject.toml
+)
+'''
+
+#[tool.pycodestyle]
+#ignore = E501
+
+[project]
+name = "transcriber"
+version = "2.0.1"
+authors = [
+  { name="Mole Shang", email="135e2@135e2.dev" },
+]
+description = "A simple tool that generates (and translates) transcripts."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+transcriber = "transcriber.main:main"
+
+
+[project.urls]
+"Homepage" = "https://github.com/135e2/transcriber"
+"Bug Tracker" = "https://github.com/135e2/transcriber/issues"
