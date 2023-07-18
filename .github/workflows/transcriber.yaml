@@ -8,8 +8,8 @@ on:
         required: true
         type: string
       whisperModel:
-        description: "The model size for whisper, default is large-v2. For more details, checkout https://github.com/openai/whisper#available-models-and-languages"
-        default: "large-v2"
+        description: "The model size for whisper, default is base.en. For more details, checkout https://github.com/openai/whisper#available-models-and-languages"
+        default: "base.en"
         type: string
       targetLanguage:
         description: "The target language for translation, default is zh (Chinese)"
