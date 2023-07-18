@@ -37,10 +37,7 @@ def parse_args():
     parser.add_argument(
         "-O",
         "--output",
-        help=(
-            "The output file path, "
-            "default is FILE(_TARGET_LANGUAGE).srt"
-        ),
+        help=("The output file path, " "default is FILE(_TARGET_LANGUAGE).srt"),
     )
     parser.add_argument(
         "-V",
@@ -81,7 +78,7 @@ def cli():
     logger.success(f"{fp} has been transcribed to {output}")
 
     if translate:
-        dlt_model = DltModel(result["language"], target_language)
+        dlt_model = DltModel(result["language"], target_language, device)
         for segment in result["segments"]:
             segment["text"] += f"\n{dlt_model.translate(segment['text'])}"
 
