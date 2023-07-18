@@ -22,6 +22,9 @@ WORKDIR /usr/src/
 # Activate venv
 ENV PATH="/usr/src/.venv/bin:$PATH"
 
+# Replace dash with bash as the default shell
+RUN rm -v /bin/sh && ln -svf /bin/bash /bin/sh
+
 # Install CLI
 RUN pip install .
 

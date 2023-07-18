@@ -31,7 +31,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
       - name: Install packages
-        run: apt update && apt install -y ffmpeg fonts-noto-cjk curl
+        run: apt update && apt install -y ffmpeg fonts-noto-cjk curl file
       - name: Download / convert audio file
         run: |
           mkdir -p workdir
@@ -58,9 +58,9 @@ jobs:
         run: |
           export PATH="/usr/src/.venv/bin:$PATH"
           if [[ ${{ inputs.translate }} == true ]]; then
-            /usr/src/.venv/bin/python /usr/src/src/transcriber/main.py -t -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+            /usr/src/.venv/bin/python /usr/src/src/main.py -t -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
           else
-            /usr/src/.venv/bin/python /usr/src/src/transcriber/main.py -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
+            /usr/src/.venv/bin/python /usr/src/src/main.py -m ${{ inputs.whisperModel }} -tl ${{ inputs.targetLanguage }} ${{ env.whisper_file }}
           fi
       - name: Generate videos with/without subtitle
         working-directory: ./workdir
