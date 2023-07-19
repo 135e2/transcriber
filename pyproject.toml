@@ -28,7 +28,7 @@ exclude = '''
 
 [project]
 name = "transcriber"
-version = "2.0.2"
+version = "2.1.0"
 authors = [
   { name="Mole Shang", email="135e2@135e2.dev" },
 ]
