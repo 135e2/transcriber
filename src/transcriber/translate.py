@@ -9,4 +9,6 @@ class DltModel:
         self.dst = Constants.LANGUAGES[dst]
 
     def translate(self, txt):
-        return self.__model.translate(txt, self.src, self.dst)
+        return self.__model.translate(
+            txt, self.src, self.dst, batch_size=Constants.BATCH
+        )
