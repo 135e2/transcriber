@@ -80,7 +80,9 @@ logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.SUCCESS)
 ch.setFormatter(
-    CustomFormatter("%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)")
+    CustomFormatter(
+        "%(asctime)s - %(levelname)s - %(message)s (%(filename)s:%(lineno)d)"
+    )
 )
 
 logger.addHandler(ch)

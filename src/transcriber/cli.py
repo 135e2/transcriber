@@ -17,15 +17,23 @@ def parse_args():
     )
     parser.add_argument("FILE", help="The path of the source file")
     parser.add_argument(
-        "-d", "--device", help="Device used by pytorch, default is cuda", default="cuda"
+        "-d",
+        "--device",
+        help="Device used by pytorch, default is cuda",
+        default="cuda",
     )
     parser.add_argument(
-        "-m", "--model", help="Whisper model, default is large-v2", default="large-v2"
+        "-m",
+        "--model",
+        help="Whisper model, default is large-v2",
+        default="large-v2",
     )
     parser.add_argument(
         "-tl",
         "--target-language",
-        help=("The target language for translation, " "default is zh (Chinese)"),
+        help=(
+            "The target language for translation, " "default is zh (Chinese)"
+        ),
         default="zh",
     )
     parser.add_argument(
@@ -37,7 +45,9 @@ def parse_args():
     parser.add_argument(
         "-O",
         "--output",
-        help=("The output file path, " "default is FILE(_TARGET_LANGUAGE).srt"),
+        help=(
+            "The output file path, " "default is FILE(_TARGET_LANGUAGE).srt"
+        ),
     )
     parser.add_argument(
         "-V",

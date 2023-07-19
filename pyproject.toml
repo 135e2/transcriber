@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.black]
-line-length = 90
+line-length = 79
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -25,9 +25,6 @@ exclude = '''
   | pyproject.toml
 )
 '''
-
-#[tool.pycodestyle]
-#ignore = E501
 
 [project]
 name = "transcriber"
