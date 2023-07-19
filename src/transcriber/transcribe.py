@@ -21,9 +21,22 @@ class WhisperxModel:
         self.__audio = whisperx.load_audio(filename)
 
     def transcribe(self):
-        return self.__model.transcribe(
+        tmp_result = self.__model.transcribe(
             self.__audio, batch_size=Constants.BATCH
         )
+        self.__model_align, self.metadata = whisperx.load_align_model(
+            language_code=tmp_result["language"], device=self.device
+        )
+        result = whisperx.align(
+            tmp_result["segments"],
+            self.__model_align,
+            self.metadata,
+            self.__audio,
+            device=self.device,
+            return_char_alignments=False,
+        )
+        result["language"] = tmp_result["language"]
+        return result
 
     def cleanup(self):
         # delete model if low on GPU resources
