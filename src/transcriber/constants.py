@@ -1,10 +1,12 @@
 from dl_translate import lang
+from .logger import logger
 
 
 class Dict(dict):
     def __missing__(self, key):
-        print(
-            f"Cannot find {key} in Constants.LANGUAGES, returning the original string ..."
+        logger.warning(
+            f"Cannot find {key} in Constants.LANGUAGES, "
+            "returning the original string ..."
         )
         return key
 
@@ -13,8 +15,7 @@ class Constants:
     # Some constant values.
     BATCH = 16  # reduce if low on GPU mem
     COMPUTE_TYPE = "float16"
-    LANGUAGES = Dict()
-    LANGUAGES = {
+    LANGUAGES = Dict({
         "en": lang.ENGLISH,
         "zh": lang.nllb200.CHINESE_SIMPLIFIED,
         "zh_CN": lang.nllb200.CHINESE_SIMPLIFIED,
@@ -102,4 +103,4 @@ class Constants:
         "ba": lang.BASHKIR,
         "jw": lang.JAVANESE,
         "su": lang.SUNDANESE,
-    }
+    })
