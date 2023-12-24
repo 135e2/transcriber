@@ -1,4 +1,4 @@
-FROM docker.io/python:3-slim AS builder
+FROM docker.io/python:3.11-slim AS builder
 
 RUN pip install --user pipenv
 
@@ -11,9 +11,9 @@ COPY . /usr/src
 
 WORKDIR /usr/src
 
-RUN python -m pipenv sync
+RUN python -m pipenv update
 
-FROM docker.io/python:3-slim AS runner
+FROM docker.io/python:3.11-slim AS runner
 
 COPY --from=builder /usr/src/ /usr/src/
 
